@@ -74,7 +74,7 @@ class AnimeDetailsResponse {
 
   AnimeDetailsResponse.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    title = json['title'] != null ? new Title.fromJson(json['title']) : null;
+    title = json['title'] != null ? Title.fromJson(json['title']) : null;
     malId = json['malId'];
     synonyms = json['synonyms'] == null ? [] : json['synonyms'].cast<String>();
     isLicensed = json['isLicensed'];
@@ -147,64 +147,64 @@ class AnimeDetailsResponse {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.title != null) {
-      data['title'] = this.title!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (title != null) {
+      data['title'] = title!.toJson();
     }
-    data['malId'] = this.malId;
-    data['synonyms'] = this.synonyms;
-    data['isLicensed'] = this.isLicensed;
-    data['isAdult'] = this.isAdult;
-    data['countryOfOrigin'] = this.countryOfOrigin;
-    if (this.trailer != null) {
-      data['trailer'] = this.trailer!.toJson();
+    data['malId'] = malId;
+    data['synonyms'] = synonyms;
+    data['isLicensed'] = isLicensed;
+    data['isAdult'] = isAdult;
+    data['countryOfOrigin'] = countryOfOrigin;
+    if (trailer != null) {
+      data['trailer'] = trailer!.toJson();
     }
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    data['popularity'] = this.popularity;
-    data['color'] = this.color;
-    data['cover'] = this.cover;
-    data['coverHash'] = this.coverHash;
-    data['description'] = this.description;
-    data['status'] = this.status;
-    data['releaseDate'] = this.releaseDate;
-    if (this.startDate != null) {
-      data['startDate'] = this.startDate!.toJson();
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    data['popularity'] = popularity;
+    data['color'] = color;
+    data['cover'] = cover;
+    data['coverHash'] = coverHash;
+    data['description'] = description;
+    data['status'] = status;
+    data['releaseDate'] = releaseDate;
+    if (startDate != null) {
+      data['startDate'] = startDate!.toJson();
     }
-    if (this.endDate != null) {
-      data['endDate'] = this.endDate!.toJson();
+    if (endDate != null) {
+      data['endDate'] = endDate!.toJson();
     }
-    if (this.nextAiringEpisode != null) {
-      data['nextAiringEpisode'] = this.nextAiringEpisode!.toJson();
+    if (nextAiringEpisode != null) {
+      data['nextAiringEpisode'] = nextAiringEpisode!.toJson();
     }
-    data['totalEpisodes'] = this.totalEpisodes;
-    data['currentEpisode'] = this.currentEpisode;
-    data['rating'] = this.rating;
-    data['duration'] = this.duration;
-    data['genres'] = this.genres;
-    data['season'] = this.season;
-    data['studios'] = this.studios;
-    data['subOrDub'] = this.subOrDub;
-    data['type'] = this.type;
-    if (this.recommendations != null) {
+    data['totalEpisodes'] = totalEpisodes;
+    data['currentEpisode'] = currentEpisode;
+    data['rating'] = rating;
+    data['duration'] = duration;
+    data['genres'] = genres;
+    data['season'] = season;
+    data['studios'] = studios;
+    data['subOrDub'] = subOrDub;
+    data['type'] = type;
+    if (recommendations != null) {
       data['recommendations'] =
-          this.recommendations!.map((v) => v.toJson()).toList();
+          recommendations!.map((v) => v.toJson()).toList();
     }
-    if (this.characters != null) {
-      data['characters'] = this.characters!.map((v) => v.toJson()).toList();
+    if (characters != null) {
+      data['characters'] = characters!.map((v) => v.toJson()).toList();
     }
-    if (this.relations != null) {
-      data['relations'] = this.relations!.map((v) => v.toJson()).toList();
+    if (relations != null) {
+      data['relations'] = relations!.map((v) => v.toJson()).toList();
     }
-    if (this.mappings != null) {
-      data['mappings'] = this.mappings!.map((v) => v.toJson()).toList();
+    if (mappings != null) {
+      data['mappings'] = mappings!.map((v) => v.toJson()).toList();
     }
-    if (this.artwork != null) {
-      data['artwork'] = this.artwork!.map((v) => v.toJson()).toList();
+    if (artwork != null) {
+      data['artwork'] = artwork!.map((v) => v.toJson()).toList();
     }
-    if (this.episodes != null) {
-      data['episodes'] = this.episodes!.map((v) => v.toJson()).toList();
+    if (episodes != null) {
+      data['episodes'] = episodes!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -226,11 +226,11 @@ class Trailer {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['site'] = this.site;
-    data['thumbnail'] = this.thumbnail;
-    data['thumbnailHash'] = this.thumbnailHash;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['site'] = site;
+    data['thumbnail'] = thumbnail;
+    data['thumbnailHash'] = thumbnailHash;
     return data;
   }
 }
@@ -249,10 +249,10 @@ class StartDate {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['year'] = this.year;
-    data['month'] = this.month;
-    data['day'] = this.day;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['year'] = year;
+    data['month'] = month;
+    data['day'] = day;
     return data;
   }
 }
@@ -271,10 +271,10 @@ class EndDate {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['year'] = this.year;
-    data['month'] = this.month;
-    data['day'] = this.day;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['year'] = year;
+    data['month'] = month;
+    data['day'] = day;
     return data;
   }
 }
@@ -293,10 +293,10 @@ class NextAiringEpisode {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['airingTime'] = this.airingTime;
-    data['timeUntilAiring'] = this.timeUntilAiring;
-    data['episode'] = this.episode;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['airingTime'] = airingTime;
+    data['timeUntilAiring'] = timeUntilAiring;
+    data['episode'] = episode;
     return data;
   }
 }
@@ -330,7 +330,7 @@ class Recommendations {
   Recommendations.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     malId = json['malId'];
-    title = json['title'] != null ? new Title.fromJson(json['title']) : null;
+    title = json['title'] != null ? Title.fromJson(json['title']) : null;
     status = json['status'];
     episodes = json['episodes'];
     image = json['image'];
@@ -342,20 +342,20 @@ class Recommendations {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['malId'] = this.malId;
-    if (this.title != null) {
-      data['title'] = this.title!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['malId'] = malId;
+    if (title != null) {
+      data['title'] = title!.toJson();
     }
-    data['status'] = this.status;
-    data['episodes'] = this.episodes;
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    data['cover'] = this.cover;
-    data['coverHash'] = this.coverHash;
-    data['rating'] = this.rating;
-    data['type'] = this.type;
+    data['status'] = status;
+    data['episodes'] = episodes;
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    data['cover'] = cover;
+    data['coverHash'] = coverHash;
+    data['rating'] = rating;
+    data['type'] = type;
     return data;
   }
 }
@@ -376,11 +376,11 @@ class Title {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['romaji'] = this.romaji;
-    data['english'] = this.english;
-    data['native'] = this.native;
-    data['userPreferred'] = this.userPreferred;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['romaji'] = romaji;
+    data['english'] = english;
+    data['native'] = native;
+    data['userPreferred'] = userPreferred;
     return data;
   }
 }
@@ -404,28 +404,28 @@ class Characters {
   Characters.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     role = json['role'];
-    name = json['name'] != null ? new Name.fromJson(json['name']) : null;
+    name = json['name'] != null ? Name.fromJson(json['name']) : null;
     image = json['image'];
     imageHash = json['imageHash'];
     if (json['voiceActors'] != null) {
       voiceActors = <VoiceActors>[];
       json['voiceActors'].forEach((v) {
-        voiceActors!.add(new VoiceActors.fromJson(v));
+        voiceActors!.add(VoiceActors.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['role'] = this.role;
-    if (this.name != null) {
-      data['name'] = this.name!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['role'] = role;
+    if (name != null) {
+      data['name'] = name!.toJson();
     }
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    if (this.voiceActors != null) {
-      data['voiceActors'] = this.voiceActors!.map((v) => v.toJson()).toList();
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    if (voiceActors != null) {
+      data['voiceActors'] = voiceActors!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -449,12 +449,12 @@ class Name {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['first'] = this.first;
-    data['last'] = this.last;
-    data['full'] = this.full;
-    data['native'] = this.native;
-    data['userPreferred'] = this.userPreferred;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['first'] = first;
+    data['last'] = last;
+    data['full'] = full;
+    data['native'] = native;
+    data['userPreferred'] = userPreferred;
     return data;
   }
 }
@@ -471,20 +471,20 @@ class VoiceActors {
   VoiceActors.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     language = json['language'];
-    name = json['name'] != null ? new Name.fromJson(json['name']) : null;
+    name = json['name'] != null ? Name.fromJson(json['name']) : null;
     image = json['image'];
     imageHash = json['imageHash'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['language'] = this.language;
-    if (this.name != null) {
-      data['name'] = this.name!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['language'] = language;
+    if (name != null) {
+      data['name'] = name!.toJson();
     }
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
+    data['image'] = image;
+    data['imageHash'] = imageHash;
     return data;
   }
 }
@@ -523,7 +523,7 @@ class Relations {
     id = json['id'];
     relationType = json['relationType'];
     malId = json['malId'];
-    title = json['title'] != null ? new Title.fromJson(json['title']) : null;
+    title = json['title'] != null ? Title.fromJson(json['title']) : null;
     status = json['status'];
     episodes = json['episodes'];
     image = json['image'];
@@ -536,22 +536,22 @@ class Relations {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['relationType'] = this.relationType;
-    data['malId'] = this.malId;
-    if (this.title != null) {
-      data['title'] = this.title!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['relationType'] = relationType;
+    data['malId'] = malId;
+    if (title != null) {
+      data['title'] = title!.toJson();
     }
-    data['status'] = this.status;
-    data['episodes'] = this.episodes;
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    data['color'] = this.color;
-    data['type'] = this.type;
-    data['cover'] = this.cover;
-    data['coverHash'] = this.coverHash;
-    data['rating'] = this.rating;
+    data['status'] = status;
+    data['episodes'] = episodes;
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    data['color'] = color;
+    data['type'] = type;
+    data['cover'] = cover;
+    data['coverHash'] = coverHash;
+    data['rating'] = rating;
     return data;
   }
 }
@@ -570,10 +570,10 @@ class Mappings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['providerId'] = this.providerId;
-    data['providerType'] = this.providerType;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['providerId'] = providerId;
+    data['providerType'] = providerType;
     return data;
   }
 }
@@ -592,10 +592,10 @@ class Artwork {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['img'] = this.img;
-    data['type'] = this.type;
-    data['providerId'] = this.providerId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['img'] = img;
+    data['type'] = type;
+    data['providerId'] = providerId;
     return data;
   }
 }
@@ -629,14 +629,14 @@ class Episodes {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['number'] = this.number;
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    data['airDate'] = this.airDate;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['description'] = description;
+    data['number'] = number;
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    data['airDate'] = airDate;
     return data;
   }
 }

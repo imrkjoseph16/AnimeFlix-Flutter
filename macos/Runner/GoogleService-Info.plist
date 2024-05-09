@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>289227627242-mcu3hrhcj4ijhvrflus3jak179dc1d4s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.289227627242-mcu3hrhcj4ijhvrflus3jak179dc1d4s</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>289227627242-4saf2bhmvldvh948gstjmk6t8knehb1i.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDi_MWj4lhMND_jYXJQMq_yp7DaKuDHJ_E</string>
+	<key>GCM_SENDER_ID</key>
+	<string>289227627242</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.animeNation.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>animeflix-e4486</string>
+	<key>STORAGE_BUCKET</key>
+	<string>animeflix-e4486.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:289227627242:ios:763019f9eae4b52e689593</string>
+</dict>
+</plist>

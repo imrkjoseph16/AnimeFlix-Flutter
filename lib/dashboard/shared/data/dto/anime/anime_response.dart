@@ -11,17 +11,17 @@ class AnimeResponse {
     if (json['results'] != null) {
       results = <Results>[];
       json['results'].forEach((v) {
-        results!.add(new Results.fromJson(v));
+        results!.add(Results.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['currentPage'] = this.currentPage;
-    data['hasNextPage'] = this.hasNextPage;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['currentPage'] = currentPage;
+    data['hasNextPage'] = hasNextPage;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -87,28 +87,28 @@ class Results {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.title != null) {
-      data['title'] = this.title!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (title != null) {
+      data['title'] = title!.toJson();
     }
-    data['image'] = this.image;
-    data['imageHash'] = this.imageHash;
-    data['episodeTitle'] = this.episodeTitle;
-    if (this.trailer != null) {
-      data['trailer'] = this.trailer!.toJson();
+    data['image'] = image;
+    data['imageHash'] = imageHash;
+    data['episodeTitle'] = episodeTitle;
+    if (trailer != null) {
+      data['trailer'] = trailer!.toJson();
     }
-    data['description'] = this.description;
-    data['status'] = this.status;
-    data['cover'] = this.cover;
-    data['coverHash'] = this.coverHash;
-    data['rating'] = this.rating;
-    data['releaseDate'] = this.releaseDate;
-    data['color'] = this.color;
-    data['genres'] = this.genres;
-    data['totalEpisodes'] = this.totalEpisodes;
-    data['duration'] = this.duration;
-    data['type'] = this.type;
+    data['description'] = description;
+    data['status'] = status;
+    data['cover'] = cover;
+    data['coverHash'] = coverHash;
+    data['rating'] = rating;
+    data['releaseDate'] = releaseDate;
+    data['color'] = color;
+    data['genres'] = genres;
+    data['totalEpisodes'] = totalEpisodes;
+    data['duration'] = duration;
+    data['type'] = type;
     return data;
   }
 }
@@ -129,11 +129,11 @@ class Title {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['romaji'] = this.romaji;
-    data['english'] = this.english;
-    data['native'] = this.native;
-    data['userPreferred'] = this.userPreferred;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['romaji'] = romaji;
+    data['english'] = english;
+    data['native'] = native;
+    data['userPreferred'] = userPreferred;
     return data;
   }
 }
@@ -154,11 +154,11 @@ class Trailer {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['site'] = this.site;
-    data['thumbnail'] = this.thumbnail;
-    data['thumbnailHash'] = this.thumbnailHash;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['site'] = site;
+    data['thumbnail'] = thumbnail;
+    data['thumbnailHash'] = thumbnailHash;
     return data;
   }
 }

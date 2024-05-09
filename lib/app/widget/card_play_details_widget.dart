@@ -30,7 +30,7 @@ class CardPlayDetailsWidget extends StatelessWidget {
       child: InkWell(
         onTap: () => onClickedCallBack(itemId),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
           child: Row(
             mainAxisSize:
                 isHorizontal == true ? MainAxisSize.min : MainAxisSize.max,

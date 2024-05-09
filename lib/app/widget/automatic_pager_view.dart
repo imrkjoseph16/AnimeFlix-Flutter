@@ -1,4 +1,6 @@
-import 'package:anime_nation/dashboard/shared/data/dto/anime_response.dart';
+// ignore_for_file: must_be_immutable
+
+import 'package:anime_nation/dashboard/shared/data/dao/list_full_data.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -94,6 +96,7 @@ class _AutomaticPagerViewState extends State<AutomaticPagerView>
                                   if (loadingProgress == null) return child;
                                   return Center(
                                     child: CircularProgressIndicator(
+                                      color: Colors.red,
                                       value:
                                           loadingProgress.expectedTotalBytes !=
                                                   null

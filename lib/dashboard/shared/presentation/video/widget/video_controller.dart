@@ -1,26 +1,36 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, non_constant_identifier_names, constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures, non_constant_identifier_names, constant_identifier_names, deprecated_member_use
 
 import 'dart:async';
-
+import 'package:anime_nation/app/core/injector_container.dart';
+import 'package:anime_nation/app/util/view_util.dart';
 import 'package:anime_nation/app/widget/card_play_details_widget.dart';
-import 'package:anime_nation/dashboard/shared/data/dto/anime_details_response.dart'
-    as details;
 import 'package:anime_nation/app/widget/bottom_shet_widget.dart';
-import 'package:anime_nation/dashboard/shared/data/dto/anime_details_response.dart';
+import 'package:anime_nation/app/widget/custom_icons.dart';
+import 'package:anime_nation/dashboard/shared/bloc/shared_bloc.dart';
+import 'package:anime_nation/dashboard/shared/data/dao/details_full_data.dart';
+import 'package:anime_nation/dashboard/shared/data/dao/details_full_data.dart'
+    as details;
+import 'package:anime_nation/dashboard/shared/presentation/video/bloc/video_streaming_bloc.dart';
 import 'package:anime_nation/dashboard/shared/presentation/video/video_streaming_page.dart';
+import 'package:anime_nation/shared/data/video_watched_details.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:perfect_volume_control/perfect_volume_control.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoController extends StatefulWidget {
   final BuildContext context;
   final VideoStreamingArguments args;
   final String streamLink;
+  final DetailsFullData? details;
   final VideoPlayerController controller;
-  VideoController(
+  const VideoController(
       {required this.context,
       required this.args,
       required this.streamLink,
+      required this.details,
       required this.controller});
 
   @override
@@ -42,6 +52,8 @@ class _VideoControllertState extends State<VideoController> {
   bool canShowControls = false;
   bool canShowRecommendation = false;
   Timer? timerDelayed;
+  double _brightness = 1.0;
+  double _soundVolume = 1.0;
 
   @override
   void initState() {
@@ -51,46 +63,85 @@ class _VideoControllertState extends State<VideoController> {
 
   @override
   void dispose() {
-    timerDelayed?.cancel();
+    disposeComponents();
     super.dispose();
   }
 
   void setupObserver() {
+    PerfectVolumeControl.hideUI = true;
     widget.controller.addListener(() {
       if ((widget.controller.value.isCompleted)) {
-        goToPlayBackState(PlayBackState.NEXT);
+        goToPlayBackState(ControllerState.NEXT);
         return;
       }
     });
   }
 
+  void disposeComponents() => timerDelayed?.cancel();
+
+  void savedWatchedDetails() {
+    var details = widget.details;
+
+    context.read<VideoStreamingBloc>().add(OnSaveWatchedEvent(
+        details: VideoWatchedDetails(
+            name: details?.title?.english ?? details?.title?.native ?? "",
+            image: details?.image ?? details?.cover ?? "",
+            id: details?.id ?? "",
+            duration: widget.controller.value.position.inSeconds,
+            totalDuration: widget.controller.value.duration.inSeconds,
+            watchedEpisode: widget.args.selectedEpisode,
+            itemType: widget.args.itemType,
+            lastDateWatched: DateTime.now().toString())));
+  }
+
+  void goBackToPreviousScreen() {
+    Navigator.of(context).pop();
+    AutoOrientation.portraitUpMode();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        ScreenTapDetector(),
-        canShowControls
-            ? Stack(
-                children: [
-                  TopControls(),
-                  CenterControls(),
-                  BottomControls(),
-                  RecommendedList(context)
-                ],
-              )
-            : const SizedBox.shrink()
-      ],
+    return WillPopScope(
+      onWillPop: () async {
+        savedWatchedDetails();
+        return true;
+      },
+      child: BlocListener<VideoStreamingBloc, VideoStreamingState>(
+        listener: (context, state) {
+          if (state is OnSavedWatchDisposeState) {
+            goBackToPreviousScreen();
+          }
+        },
+        child: Stack(
+          children: <Widget>[
+            ScreenTapDetector(),
+            canShowControls
+                ? Stack(
+                    children: [
+                      TopControls(),
+                      SideControls(),
+                      CenterControls(),
+                      BottomControls(),
+                      RecommendedList(context)
+                    ],
+                  )
+                : const SizedBox.shrink()
+          ],
+        ),
+      ),
     );
   }
 
   Widget ScreenTapDetector() {
     return GestureDetector(
       onTap: () {
+        sideControlValueListener();
         setState(() {
           if (canShowControls)
             canShowControls = false;
           else
             canShowControls = true;
+
           setControlDelayed();
         });
       },
@@ -101,16 +152,14 @@ class _VideoControllertState extends State<VideoController> {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setTopState) {
       return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Padding(
-            padding: const EdgeInsets.all(22.0),
+            padding: const EdgeInsets.only(left: 25),
             child: InkWell(
-              onTap: () => {
-                Navigator.of(context).pop(),
-                AutoOrientation.portraitUpMode()
-              },
+              onTap: () => savedWatchedDetails(),
               child: const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Icon(
@@ -124,8 +173,8 @@ class _VideoControllertState extends State<VideoController> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(22),
+          const SizedBox(width: 16),
+          Expanded(
             child: Text(setupTitle(),
                 style: const TextStyle(
                   color: Colors.white,
@@ -142,36 +191,36 @@ class _VideoControllertState extends State<VideoController> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(
-              vertical: 16,
               horizontal: 16,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  PopupMenuButton<double>(
-                    initialValue: widget.controller.value.playbackSpeed,
-                    tooltip: 'Playback Speed',
-                    onSelected: (double speed) {
-                      setTopState(() {
-                        widget.controller.setPlaybackSpeed(speed);
-                      });
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return <PopupMenuItem<double>>[
-                        for (final double speed in playBackSpeedList)
-                          PopupMenuItem<double>(
-                            value: speed,
-                            child: Text('${speed}x',
-                                style: const TextStyle(
-                                    fontFamily: "SfProTextMedium")),
-                          )
-                      ];
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 25, bottom: 8, right: 8),
+                    child: PopupMenuButton<double>(
+                      initialValue: widget.controller.value.playbackSpeed,
+                      tooltip: 'Playback Speed',
+                      onSelected: (double speed) {
+                        setTopState(() {
+                          widget.controller.setPlaybackSpeed(speed);
+                        });
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuItem<double>>[
+                          for (final double speed in playBackSpeedList)
+                            PopupMenuItem<double>(
+                              value: speed,
+                              child: Text('${speed}x',
+                                  style: const TextStyle(
+                                      fontFamily: "SfProTextMedium")),
+                            )
+                        ];
+                      },
                       child: Text(
-                          '${widget.controller.value.playbackSpeed}x speed',
+                          'Speed (${widget.controller.value.playbackSpeed}x)',
                           style: const TextStyle(
                               shadows: <Shadow>[
                                 Shadow(color: Colors.black, blurRadius: 15.0)
@@ -183,25 +232,22 @@ class _VideoControllertState extends State<VideoController> {
                   ),
                   InkWell(
                     onTap: () => {
-                      setState(() => {
-                            if (canShowRecommendation)
-                              canShowRecommendation = false
-                            else
-                              canShowRecommendation = true
-                          }),
+                      setState(() {
+                        if (canShowRecommendation)
+                          canShowRecommendation = false;
+                        else
+                          canShowRecommendation = true;
+                      }),
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Episodes",
-                        style: TextStyle(
-                            shadows: <Shadow>[
-                              Shadow(color: Colors.black, blurRadius: 15.0)
-                            ],
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: "SfProTextMedium"),
-                      ),
+                    child: const Text(
+                      "Episodes",
+                      style: TextStyle(
+                          shadows: <Shadow>[
+                            Shadow(color: Colors.black, blurRadius: 15.0)
+                          ],
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "SfProTextMedium"),
                     ),
                   ),
                 ]),
@@ -211,12 +257,61 @@ class _VideoControllertState extends State<VideoController> {
     });
   }
 
+  Widget SideControls() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: StatefulBuilder(builder: (context, setState) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  const Icon(CustomIcons.sun, color: Colors.white),
+                  RotatedBox(
+                      quarterTurns: -1,
+                      child: Slider(
+                          value: _brightness,
+                          activeColor: Colors.red,
+                          onChanged: (double value) => setSideControlValue(
+                              ControllerState.BRIGHTNESS, setState, value))),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Icon(
+                      _soundVolume == 0.0
+                          ? Icons.volume_off_rounded
+                          : Icons.volume_up_rounded,
+                      color: Colors.white),
+                  RotatedBox(
+                      quarterTurns: -1,
+                      child: Slider(
+                          value: _soundVolume,
+                          activeColor: Colors.red,
+                          onChanged: (double value) => setSideControlValue(
+                              ControllerState.VOLUME, setState, value))),
+                ],
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
   Widget CenterControls() {
     return Center(
       child: Wrap(
         children: [
           InkWell(
-            onTap: () => goToPlayBackState(PlayBackState.PREVIOUS),
+            onTap: () => goToPlayBackState(ControllerState.PREVIOUS),
             child: SetupIcon(Icons.skip_previous),
           ),
           InkWell(
@@ -246,7 +341,7 @@ class _VideoControllertState extends State<VideoController> {
             child: SetupIcon(Icons.forward_10),
           ),
           InkWell(
-            onTap: () => goToPlayBackState(PlayBackState.NEXT),
+            onTap: () => goToPlayBackState(ControllerState.NEXT),
             child: SetupIcon(Icons.skip_next),
           ),
         ],
@@ -255,6 +350,7 @@ class _VideoControllertState extends State<VideoController> {
   }
 
   Widget BottomControls() {
+    var util = locator.get<ViewUtil>();
     return Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
@@ -265,7 +361,7 @@ class _VideoControllertState extends State<VideoController> {
                 valueListenable: widget.controller,
                 builder: (context, VideoPlayerValue value, child) {
                   return Text(
-                      convertDuration(
+                      util.convertDuration(
                           widget.controller.value.position.inMilliseconds),
                       style: const TextStyle(
                           color: Colors.white, fontFamily: "SfProTextMedium"));
@@ -282,7 +378,7 @@ class _VideoControllertState extends State<VideoController> {
                 ),
               ),
               Text(
-                convertDuration(
+                util.convertDuration(
                     widget.controller.value.duration.inMilliseconds),
                 style: const TextStyle(
                     color: Colors.white, fontFamily: "SfProTextMedium"),
@@ -296,8 +392,12 @@ class _VideoControllertState extends State<VideoController> {
     return canShowRecommendation
         ? BottomSheetWidget(
             canShowBottomList: canShowRecommendation,
-            onPanelClosed: () =>
-                {canShowRecommendation = false, setControlDelayed()},
+            onPanelClosed: () => {
+                  setState(() {
+                    canShowRecommendation = false;
+                    setControlDelayed();
+                  })
+                },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -307,7 +407,7 @@ class _VideoControllertState extends State<VideoController> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      "${widget.args.details?.title?.english ?? widget.args.details?.title?.native} (Episodes)",
+                      "${widget.details?.title?.english ?? widget.details?.title?.native} (Episodes)",
                       style: const TextStyle(
                           color: Colors.white,
                           fontFamily: "SfProTextMedium",
@@ -320,10 +420,9 @@ class _VideoControllertState extends State<VideoController> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: widget.args.details?.episodes?.length ?? 0,
+                        itemCount: getEpisodeList()?.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
-                          Episodes? result =
-                              widget.args.details?.episodes?[index];
+                          Episodes? result = getEpisodeList()?[index];
                           return CardPlayDetailsWidget(
                             cardEnabled:
                                 widget.args.selectedEpisode == index + 1
@@ -331,13 +430,15 @@ class _VideoControllertState extends State<VideoController> {
                                     : true,
                             isHorizontal: true,
                             itemId: result?.id ?? "",
-                            firstLine: widget.args.details?.title?.english ??
-                                widget.args.details?.title?.native,
-                            secondLine: "Episode: ${result?.number}",
-                            thirdLine: "Status: ${widget.args.details?.status}",
+                            firstLine: widget.details?.title?.english ??
+                                widget.details?.title?.native,
+                            secondLine: result?.description ??
+                                "Episode: ${result?.episode ?? result?.number}",
+                            thirdLine: result?.airDate ??
+                                "Status: ${widget.details?.status}",
                             image: result?.image ??
-                                widget.args.details?.cover ??
-                                widget.args.details?.image,
+                                widget.details?.cover ??
+                                widget.details?.image,
                             onItemClicked: (episodeId) {
                               goToStreamScreen(episode: result?.number ?? 0);
                             },
@@ -350,6 +451,14 @@ class _VideoControllertState extends State<VideoController> {
         : const SizedBox.shrink();
   }
 
+  List<Episodes>? getEpisodeList() {
+    if (widget.args.itemType == ItemType.MOVIES) {
+      return widget.details?.seasons?[0].episodes;
+    } else {
+      return widget.details?.episodes;
+    }
+  }
+
   Widget SetupIcon(IconData icon) => Icon(
         icon,
         color: Colors.white,
@@ -358,16 +467,30 @@ class _VideoControllertState extends State<VideoController> {
       );
 
   String setupTitle() {
-    details.Title? title = widget.args.details?.title;
+    details.Title? title = widget.details?.title;
     return "${title?.english ?? title?.native ?? ""}"
         " (Episode ${widget.args.selectedEpisode})";
   }
 
-  convertDuration(int millisSeconds) {
-    var duration = Duration(milliseconds: millisSeconds.round());
-    return [duration.inMinutes, duration.inSeconds]
-        .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
-        .join(':');
+  void setSideControlValue(
+      ControllerState state, StateSetter setSideControl, double value) {
+    setSideControl(() {
+      if (state == ControllerState.BRIGHTNESS) {
+        _brightness = value;
+        ScreenBrightness().setScreenBrightness(_brightness);
+      } else {
+        _soundVolume = value;
+        PerfectVolumeControl.setVolume(_soundVolume);
+      }
+    });
+    setControlDelayed();
+  }
+
+  void sideControlValueListener() async {
+    try {
+      ScreenBrightness().current.then((value) => _brightness = value);
+      PerfectVolumeControl.volume.then((value) => _soundVolume = value);
+    } catch (e) {}
   }
 
   void setControlDelayed() {
@@ -383,11 +506,10 @@ class _VideoControllertState extends State<VideoController> {
     });
   }
 
-  void goToPlayBackState(PlayBackState state) {
+  void goToPlayBackState(ControllerState state) {
     switch (state) {
-      case PlayBackState.NEXT:
-        if (widget.args.details?.episodes?.length !=
-            widget.args.selectedEpisode) {
+      case ControllerState.NEXT:
+        if (widget.details?.episodes?.length != widget.args.selectedEpisode) {
           goToStreamScreen(episode: widget.args.selectedEpisode + 1);
         }
         break;
@@ -404,10 +526,14 @@ class _VideoControllertState extends State<VideoController> {
   void goToStreamScreen({required num episode}) =>
       Navigator.of(context).popAndPushNamed('/watch',
           arguments: VideoStreamingArguments(
-              details: widget.args.details, selectedEpisode: episode));
+              itemType: widget.args.itemType,
+              detailsId: widget.args.detailsId,
+              selectedEpisode: episode));
 }
 
-enum PlayBackState {
+enum ControllerState {
   PREVIOUS,
-  NEXT;
+  NEXT,
+  BRIGHTNESS,
+  VOLUME;
 }

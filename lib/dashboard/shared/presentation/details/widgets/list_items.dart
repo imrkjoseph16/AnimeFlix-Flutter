@@ -1,31 +1,40 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, must_be_immutable
 
 import 'package:anime_nation/app/widget/avatar_widget.dart';
 import 'package:anime_nation/app/widget/card_play_details_widget.dart';
 import 'package:anime_nation/app/widget/empty_data_widget.dart';
 import 'package:anime_nation/app/widget/large_card_widget.dart';
-import 'package:anime_nation/dashboard/shared/data/dto/anime_details_response.dart';
+import 'package:anime_nation/dashboard/shared/bloc/shared_bloc.dart';
+import 'package:anime_nation/dashboard/shared/data/dao/details_full_data.dart';
 import 'package:anime_nation/dashboard/shared/presentation/details/details_page.dart';
 import 'package:anime_nation/dashboard/shared/presentation/video/video_streaming_page.dart';
 import 'package:flutter/material.dart';
 
 class ListItemsWidget extends StatelessWidget {
+  final ItemType itemType;
+  final String parentId;
   BuildContext context;
-  AnimeDetailsResponse? response;
+  DetailsFullData? response;
   SelectionType selectedType = SelectionType.EPISODES;
   Map<SelectionType, Widget> optionItems = {};
 
-  ListItemsWidget({super.key, required this.context, this.response});
+  ListItemsWidget(
+      {super.key,
+      required this.parentId,
+      required this.itemType,
+      required this.context,
+      this.response});
 
   @override
   Widget build(BuildContext context) {
     setupTabOptions();
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16),
       child: Column(children: [
-        response?.characters?.isEmpty == true
-            ? const SizedBox.shrink()
-            : CastsWidget(),
+        Visibility(
+            visible: response?.characters?.isNotEmpty == true &&
+                response?.characters != null,
+            child: CastsWidget()),
         SelectionsWidget()
       ]),
     );
@@ -64,7 +73,6 @@ class ListItemsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Other Selections Tab //
-        const SizedBox(height: 16),
         StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -88,11 +96,14 @@ class ListItemsWidget extends StatelessWidget {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const SizedBox(height: 6),
                   getOthersItemCount(selectedType) == 0
-                      ? const EmptyDataWidget()
+                      ? EmptyDataWidget()
                       : ListView.builder(
                           primary: false,
                           shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
                           itemCount: getOthersItemCount(selectedType),
                           itemBuilder: (BuildContext context, int index) {
@@ -105,10 +116,11 @@ class ListItemsWidget extends StatelessWidget {
                                         result?.title?.native,
                                     secondLine: result?.relationType,
                                     thirdline: result?.status,
-                                    image: result?.cover,
+                                    image: result?.cover ?? result?.image,
                                     isHorizontal: true,
                                     onItemClicked: (detailsId) =>
                                         goToDetailsScreen(
+                                            type: itemType,
                                             detailsId: detailsId));
                               case SelectionType.RECOMMENDATION:
                                 Recommendations? result =
@@ -119,26 +131,31 @@ class ListItemsWidget extends StatelessWidget {
                                       result?.title?.native,
                                   secondLine: result?.type,
                                   thirdline: result?.status,
-                                  image: result?.cover,
-                                  starRating: result?.rating,
+                                  image: result?.cover ?? result?.image,
+                                  starRating: result?.rating?.toInt(),
                                   isHorizontal: true,
                                   onItemClicked: (detailsId) =>
-                                      goToDetailsScreen(detailsId: detailsId),
+                                      goToDetailsScreen(
+                                          type: itemType, detailsId: detailsId),
                                 );
                               default:
-                                // We need to skip the first data of the list,
-                                // since the current episode displayed in the details,
-                                // is default episode one.
-                                Episodes? result =
-                                    response?.episodes?.skip(1).toList()[index];
+                                Episodes? result;
+                                if (itemType == ItemType.MOVIES) {
+                                  result =
+                                      response?.seasons?[0].episodes?[index];
+                                } else {
+                                  result = response?.episodes?[index];
+                                }
+
                                 return CardPlayDetailsWidget(
                                   cardEnabled: true,
                                   itemId: result?.id ?? "",
                                   firstLine: response?.title?.english ??
                                       response?.title?.native,
                                   secondLine: "Episode: ${result?.number}",
-                                  thirdLine: "Status: ${response?.status}",
-                                  image: result?.image,
+                                  thirdLine: result?.type ??
+                                      "Status: ${response?.status}",
+                                  image: result?.image ?? response?.image,
                                   onItemClicked: (episodeId) {
                                     goToStreamScreen(
                                         selectedEpisode: result?.number ?? 1);
@@ -163,16 +180,14 @@ class ListItemsWidget extends StatelessWidget {
     return optionItems;
   }
 
-  Widget setupTab({required String title}) {
-    return Tab(
-      child: Text(title,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: "SfProTextBold",
-            color: Colors.white,
-          )),
-    );
-  }
+  Widget setupTab({required String title}) => Tab(
+        child: Text(title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: "SfProTextBold",
+              color: Colors.white,
+            )),
+      );
 
   int getOthersItemCount(SelectionType selectedType) {
     switch (selectedType) {
@@ -181,20 +196,26 @@ class ListItemsWidget extends StatelessWidget {
       case SelectionType.RECOMMENDATION:
         return response?.recommendations?.take(10).length ?? 0;
       default:
-        return response?.episodes?.skip(1).take(10).length ?? 0;
+        if (itemType == ItemType.MOVIES &&
+            response?.seasons?.isNotEmpty == true) {
+          return response?.seasons?[0].episodes?.take(10).length ?? 0;
+        } else {
+          return response?.episodes?.take(10).length ?? 0;
+        }
     }
   }
 
-  void goToDetailsScreen({required String detailsId}) {
-    Navigator.of(context).popAndPushNamed(
-      '/details',
-      arguments: DetailsArguments(detailsId: detailsId),
-    );
-  }
+  void goToDetailsScreen({required ItemType type, required String detailsId}) =>
+      Navigator.of(context).popAndPushNamed(
+        '/details',
+        arguments: DetailsArguments(type: type, detailsId: detailsId),
+      );
 
-  void goToStreamScreen({required num selectedEpisode}) {
-    Navigator.of(context).pushNamed('/watch',
-        arguments: VideoStreamingArguments(
-            details: response, selectedEpisode: selectedEpisode));
-  }
+  void goToStreamScreen({required num selectedEpisode}) =>
+      Navigator.of(context).pushNamed('/watch',
+          arguments: VideoStreamingArguments(
+              detailsId: parentId,
+              itemType: itemType,
+              selectedEpisode: selectedEpisode,
+              typeOfMovie: response?.type));
 }

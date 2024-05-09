@@ -1,14 +1,14 @@
+import 'package:anime_nation/app/util/default.dart';
+import 'package:anime_nation/dashboard/shared/data/dto/anime/anime_details_response.dart';
+import 'package:anime_nation/dashboard/shared/data/dto/anime/anime_response.dart';
+import 'package:anime_nation/dashboard/shared/presentation/video/data/dto/anime_stream_response.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert' as json;
 
-import 'package:anime_nation/dashboard/shared/data/dto/anime_details_response.dart';
-import 'package:anime_nation/dashboard/shared/presentation/video/data/streaming_link_response.dart';
-import 'package:http/http.dart' as http;
-import '../dto/anime_response.dart';
-
 class AnimeApiClient {
+
   Future<AnimeResponse?> getAnimeList(String queryName) async {
-    var url = Uri.parse(
-        'https://anime-nation-server.vercel.app/meta/anilist/$queryName');
+    var url = Uri.parse('${Default.ANIME_BASE_URL}$queryName');
 
     var response = await http.get(url);
 
@@ -20,8 +20,7 @@ class AnimeApiClient {
   }
 
   Future<AnimeDetailsResponse?> getAnimeDetails(String detailsId) async {
-    var url = Uri.parse(
-        'https://anime-nation-server.vercel.app/meta/anilist/info/$detailsId');
+    var url = Uri.parse('${Default.ANIME_BASE_URL}info/$detailsId');
 
     var response = await http.get(url);
 
@@ -32,14 +31,13 @@ class AnimeApiClient {
     }
   }
 
-  Future<StreamingLinkResponse?> getStreamLink(String? streamId) async {
-    var url = Uri.parse(
-        'https://anime-nation-server.vercel.app/meta/anilist/watch/$streamId');
+  Future<AnimeStreamResponse?> getStreamLink(String? streamId) async {
+    var url = Uri.parse('${Default.ANIME_BASE_URL}watch/$streamId');
 
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return StreamingLinkResponse.fromJson(json.jsonDecode(response.body));
+      return AnimeStreamResponse.fromJson(json.jsonDecode(response.body));
     } else {
       return null;
     }

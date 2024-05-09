@@ -1,7 +1,10 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:anime_nation/app/widget/empty_data_widget.dart';
 import 'package:flutter/material.dart';
 
 class HeaderItemsWidget extends StatelessWidget {
-  String bannerImage;
+  String? bannerImage;
   HeaderItemsWidget({super.key, required this.bannerImage});
 
   @override
@@ -22,42 +25,27 @@ class HeaderItemsWidget extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               height: 550.0,
-              child: Image.network(
-                bannerImage,
-                fit: BoxFit.cover,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-              ),
+              child: bannerImage != null
+                  ? Image.network(
+                      bannerImage!,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.red,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    )
+                  : Center(child: EmptyDataWidget()),
             ),
           ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                  alignment: Alignment.topLeft,
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(
-                        size: 28,
-                        shadows: <Shadow>[
-                          Shadow(color: Colors.black, blurRadius: 15.0)
-                        ],
-                        Icons.arrow_back,
-                        color: Colors.white),
-                  )),
-            ),
-          )
         ])
       ],
     );

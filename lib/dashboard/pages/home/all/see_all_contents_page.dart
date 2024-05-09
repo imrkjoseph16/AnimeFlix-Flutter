@@ -1,7 +1,8 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:anime_nation/app/widget/large_card_widget.dart';
-import 'package:anime_nation/dashboard/shared/data/dto/anime_response.dart';
+import 'package:anime_nation/dashboard/shared/bloc/shared_bloc.dart';
+import 'package:anime_nation/dashboard/shared/data/dao/list_full_data.dart';
 import 'package:anime_nation/dashboard/shared/presentation/details/details_page.dart';
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,8 @@ class _SeeAllContentPageState extends State<SeeAllContentPage> {
                           onItemClicked: (detailsId) {
                             Navigator.of(context).pushNamed(
                               '/details',
-                              arguments: DetailsArguments(detailsId: detailsId),
+                              arguments: DetailsArguments(
+                                  type: widget.args.type, detailsId: detailsId),
                             );
                           },
                         );
@@ -97,7 +99,9 @@ class _SeeAllContentPageState extends State<SeeAllContentPage> {
 }
 
 class SeelAllContentArguments {
+  final ItemType type;
   String title;
-  AnimeResponse? response;
-  SeelAllContentArguments({required this.title, required this.response});
+  ListFullData? response;
+  SeelAllContentArguments(
+      {required this.type, required this.title, required this.response});
 }

@@ -8,30 +8,28 @@ final class LoadingState extends SharedState {}
 
 final class NoDataState extends SharedState {}
 
-class GetAnimeList extends SharedState {
-  GetAnimeUiItems? items;
-  GetAnimeList({this.items});
+class GetHomeItemsList extends SharedState {
+  GetHomeUiItems? items;
+  GetHomeItemsList({this.items});
 }
 
-class GetExploreList extends SharedState {
-  AnimeResponse? response;
-  GetExploreList({this.response});
+class GetItemDetails extends SharedState {
+  DetailsFullData? details;
+  GetItemDetails({this.details});
 }
 
-class GetAnimeDetails extends SharedState {
-  AnimeDetailsResponse? details;
-  GetAnimeDetails({this.details});
-}
-
-class GetAnimeUiItems {
+class GetHomeUiItems {
   List<Results>? carouselList = [];
-  AnimeResponse? topAnime;
-  AnimeResponse? recentEpisodes;
-  AnimeResponse? popularAnime;
-  AnimeResponse? randomAnime;
-  AnimeResponse? airingAnime;
+  ListFullData? continueWatchList;
+  ListFullData? topAnime;
+  ListFullData? recentEpisodes;
+  ListFullData? popularAnime;
+  ListFullData? randomAnime;
+  ListFullData? airingAnime;
+  ListFullData? randomKorean;
+  ListFullData? randomMovie;
 
-  GetAnimeUiItems(
+  GetHomeUiItems(
       {this.carouselList,
       this.topAnime,
       this.recentEpisodes,
